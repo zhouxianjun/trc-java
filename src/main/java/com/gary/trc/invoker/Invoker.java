@@ -1,6 +1,7 @@
 package com.gary.trc.invoker;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * @author zhouxianjun(Gary)
@@ -8,7 +9,7 @@ import java.lang.reflect.Method;
  * @Description:
  * @date 17-4-28 下午4:16
  */
-public interface Invoker {
+public interface Invoker extends Cloneable {
     String getAddress();
 
     String getHost();
@@ -33,5 +34,9 @@ public interface Invoker {
 
     void destroy();
 
+    void override(Map<String, Object> override);
+
     boolean validate();
+
+    Invoker clone() throws CloneNotSupportedException;
 }

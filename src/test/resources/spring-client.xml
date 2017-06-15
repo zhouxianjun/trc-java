@@ -13,7 +13,6 @@
         <property name="singleton" value="true" />
     </bean>
     <bean class="com.gary.trc.ThriftServiceClientFactory">
-        <constructor-arg name="host" value="127.0.0.1"/>
         <constructor-arg name="thriftServerProvider">
             <bean class="com.gary.trc.zookeeper.ZookeeperThriftServerProvider">
                 <constructor-arg name="zkClient" ref="zookeeper"/>

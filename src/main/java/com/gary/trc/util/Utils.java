@@ -158,7 +158,7 @@ public class Utils {
         if (val instanceof Collection) {
             return (Collection<T>) val;
         }
-        return defaultValue;
+        return (Collection<T>) Collections.singleton(val);
     }
 
     public static Set<Map<String, Object>> urlParse(List<String> urls) {

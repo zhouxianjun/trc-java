@@ -43,6 +43,7 @@ public class Router {
                     matchProviders(result, providers, providerAddress);
                 }
             }
+            return result;
         }
         return providers;
     }

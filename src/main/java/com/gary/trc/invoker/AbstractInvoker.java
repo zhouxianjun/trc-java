@@ -29,16 +29,26 @@ public abstract class AbstractInvoker implements Invoker {
         this.interfaceClass = interfaceClass;
         this.interfaceName = interfaceName;
         Map<String, Object> params = Utils.queryToMap(address);
-        this.host = Utils.getMapString(params, "host", "");
-        this.port = Utils.getMapInt(params, "port", 0);
-        this.weight = Utils.getMapInt(params, "weight", 100);
+        this.override(params);
         this.startTime = Utils.getMapLong(params, "start", 0);
-        this.warmup = Utils.getMapInt(params, "warmup", 0);
-        this.attr = Utils.getMapString(params, "attr", "");
+    }
+
+    @Override
+    public void override(Map<String, Object> override) {
+        this.host = Utils.getMapString(override, "host", this.host);
+        this.port = Utils.getMapInt(override, "port", this.port);
+        this.weight = Utils.getMapInt(override, "weight", this.weight);
+        this.warmup = Utils.getMapInt(override, "warmup", this.warmup);
+        this.attr = Utils.getMapString(override, "attr", this.attr);
     }
 
     @Override
     public boolean validate() {
         return NetworkUtil.isValidHost(this.host) && NetworkUtil.isInvalidPort(this.port);
+    }
+
+    @Override
+    public Invoker clone() throws CloneNotSupportedException {
+        return (Invoker) super.clone();
     }
 }

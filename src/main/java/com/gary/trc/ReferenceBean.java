@@ -41,17 +41,19 @@ public class ReferenceBean implements FactoryBean, InitializingBean {
     private InvokerFactory invokerFactory;
     private String service;
     private String version;
+    private String host;
 
     private Map<String, Invoker> providerCache = new HashMap<>();
 
     private Set<String> configuratorCache = new HashSet<>();
 
-    public ReferenceBean(Class<?> referenceClass, InvokerFactory invokerFactory, LoadBalance loadBalance, String service, String version) {
+    public ReferenceBean(Class<?> referenceClass, InvokerFactory invokerFactory, LoadBalance loadBalance, String service, String version, String host) {
         this.referenceClass = referenceClass;
         this.invokerFactory = invokerFactory;
         this.loadBalance = loadBalance;
         this.service = service;
         this.version = version;
+        this.host = host;
     }
 
     public void updateProviders(List<String> providers) throws Exception {
@@ -130,6 +132,7 @@ public class ReferenceBean implements FactoryBean, InitializingBean {
                 ctx.setProxy(proxy);
                 ctx.setService(service);
                 ctx.setVersion(version);
+                ctx.setHost(host);
                 // 执行过滤器选择生产者
                 if (!filterSelector(ctx, routerResult, args)) {
                     return null;
@@ -181,7 +184,7 @@ public class ReferenceBean implements FactoryBean, InitializingBean {
                 }
             }
 
-            private Map<String, Invoker> checkMethod(Method method) throws NoSuchMethodException {
+            private Map<String, Invoker> checkMethod(Method method) throws Exception {
                 Map<String, Invoker> result = new HashMap<>();
                 Iterator<Map.Entry<String, Invoker>> iterator = providerCache.entrySet().iterator();
                 while (iterator.hasNext()) {
@@ -190,7 +193,7 @@ public class ReferenceBean implements FactoryBean, InitializingBean {
                     Map<String, Object> map = Utils.queryToMap(address);
                     String methods = Utils.getMapString(map, "methods", "");
                     if (Utils.findForArray(methods.split(","), method.getName()) != null) {
-                        result.put(address, entry.getValue());
+                        result.put(address, entry.getValue().clone());
                     }
                 }
 

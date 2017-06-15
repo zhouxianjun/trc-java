@@ -16,4 +16,5 @@ public class Context {
     private Method method;
     private String service;
     private String version;
+    private String host;
 }

@@ -101,7 +101,7 @@ public class ThriftServiceClientFactory extends InstantiationAwareBeanPostProces
             return referenceBean.getObject();
         String serviceName = referenceClass.getEnclosingClass().getSimpleName();
         serviceName = StringUtils.isEmpty(reference.name()) ? serviceName : reference.name();
-        referenceBean = new ReferenceBean(referenceClass, invokerFactory, loadBalance, serviceName, reference.version());
+        referenceBean = new ReferenceBean(referenceClass, invokerFactory, loadBalance, serviceName, reference.version(), host);
         referenceBean.setRouter(new Router(host, Collections.<String>emptyList()));
         referenceBean.addFilter(new DisabledFilter());
         initFilters(referenceBean);
