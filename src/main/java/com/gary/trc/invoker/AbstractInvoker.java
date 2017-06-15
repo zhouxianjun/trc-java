@@ -13,7 +13,7 @@ import java.util.Map;
  * @date 17-5-8 下午3:12
  */
 @Getter
-public abstract class AbstractInvoker implements Invoker {
+public abstract class AbstractInvoker implements Invoker, Cloneable {
     private String address;
     private String host;
     private int port;

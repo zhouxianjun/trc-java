@@ -9,7 +9,7 @@ import java.util.Map;
  * @Description:
  * @date 17-4-28 下午4:16
  */
-public interface Invoker extends Cloneable {
+public interface Invoker {
     String getAddress();
 
     String getHost();
