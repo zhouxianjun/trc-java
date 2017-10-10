@@ -3,6 +3,7 @@ package com.gary.trc;
 import com.gary.trc.annotation.ThriftService;
 import com.gary.trc.util.NetworkUtil;
 import com.gary.trc.util.Utils;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TMultiplexedProcessor;
@@ -19,6 +20,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.Closeable;
@@ -52,9 +54,13 @@ public class ThriftServiceServerFactory implements ApplicationContextAware, Init
     @Setter
     private ExecutorService executorService;// 可选
     @Setter
+    @Getter
     private String host;
     @Setter
+    @Getter
     private int port = 0; // 可选
+    @Getter
+    private int pid = 0;
     @Setter
     private long maxReadBufferBytes = 1024 * 1024L; // 可选
     @Setter
@@ -89,6 +95,7 @@ public class ThriftServiceServerFactory implements ApplicationContextAware, Init
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        pid = Integer.parseInt(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
         Map<String, Object> services = applicationContext.getBeansWithAnnotation(ThriftService.class);
         if (services != null) {
             TMultiplexedProcessor multiplexedProcessor = new TMultiplexedProcessor();
@@ -114,12 +121,14 @@ public class ThriftServiceServerFactory implements ApplicationContextAware, Init
                         Map<String, Object> address = new HashMap<>();
                         address.put("host", host);
                         address.put("port", port);
-                        address.put("weight", service.weight());
+                        Object weight = Utils.getFieldValue("weight", entry.getValue());
+                        address.put("weight", weight == null ? service.weight() : weight);
                         address.put("start", System.currentTimeMillis());
                         address.put("warmup", warmup);
                         address.put("methods", Utils.methodJoin(thriftInterface));
-                        address.put("attr", service.attr());
-                        address.put("pid", ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+                        Object attr = Utils.getFieldValue("attr", entry.getValue());
+                        address.put("attr", attr == null ? service.attr() : attr);
+                        address.put("pid", pid);
                         serverRegister.register(serviceName, service.version(), Utils.mapToQuery(address, null, null, false, null));
                     }
                     log.info("thrift service [{}-{}] register", serviceName, serviceClass);

@@ -5,9 +5,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
+import org.springframework.util.ReflectionUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -179,6 +181,13 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    public static Object getFieldValue(String field, Object target) throws IllegalAccessException {
+        Field f = ReflectionUtils.findField(target.getClass(), field);
+        if (f == null) return null;
+        ReflectionUtils.makeAccessible(f);
+        return f.get(target);
     }
 
     private static void addValue(List<String> list, String key, Object value, String eq, boolean encode, String enc) throws UnsupportedEncodingException {
